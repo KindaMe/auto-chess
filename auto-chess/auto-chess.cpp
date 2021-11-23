@@ -31,6 +31,18 @@ public:
 	{
 		return cost;
 	}
+	std::string getName()
+	{
+		return name;
+	}
+	int getTier()
+	{
+		return tier;
+	}
+	void mergeTier()
+	{
+		tier++;
+	}
 };
 
 class pawn1 : public pawn
@@ -87,6 +99,8 @@ public:
 void inGame();
 void shopping(int& goldPtr, std::vector<pawn*>& benchPtr);
 void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
+void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
+void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<int> sameIndex);
 
 int main()
 {
@@ -118,9 +132,11 @@ void inGame()
 		{
 		case '1':
 			manageBoard(bench, board);
+			mergeCheck(bench, board);
 			break;
 		case '2':
 			shopping(gold, bench);
+			mergeCheck(bench, board);
 			break;
 		case 'r':
 			std::cout << "Ready!";
@@ -291,4 +307,97 @@ void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
 			}
 		}
 	} while (true);
+}
+
+void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
+{
+	std::vector<int> sameIndex;
+	pawn* tempPawn = NULL;
+	bool merged = false;
+
+	do
+	{
+		merged = false;
+
+		for (int h = 0; h < benchPtr.size() + boardPtr.size(); h++)
+		{
+			sameIndex.clear();
+			sameIndex.push_back(h);
+
+			if (h < benchPtr.size())
+			{
+				tempPawn = benchPtr[h];
+			}
+			else if (h >= benchPtr.size())
+			{
+				tempPawn = boardPtr[h - benchPtr.size()];
+			}
+
+			for (int i = 0; i < benchPtr.size() + boardPtr.size(); i++)
+			{
+				if (i < benchPtr.size() && benchPtr[i]->getName() == tempPawn->getName() && benchPtr[i]->getTier() == tempPawn->getTier() && i != h)
+				{
+					//std::cout << "\nbench//";
+					sameIndex.push_back(i);
+					//benchPtr[i]->getInfo();
+
+					if (sameIndex.size() == 3)
+					{
+						mergePawns(benchPtr, boardPtr, sameIndex);
+
+						merged = true;
+						goto restartOnMerge;
+					}
+				}
+				else if (i >= benchPtr.size() && boardPtr[i - benchPtr.size()]->getName() == tempPawn->getName() && boardPtr[i - benchPtr.size()]->getTier() == tempPawn->getTier() && i != h)
+				{
+					//std::cout << "\nboard//";
+					sameIndex.push_back(i);
+					//boardPtr[i - benchPtr.size()]->getInfo();
+
+					if (sameIndex.size() == 3)
+					{
+						mergePawns(benchPtr, boardPtr, sameIndex);
+
+						merged = true;
+						goto restartOnMerge;
+					}
+				}
+			}
+		}
+	restartOnMerge: {}
+	} while (merged == true);
+
+	/*std::cin.ignore();
+	std::cin.clear();
+	std::cin.get();*/
+}
+
+void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<int> sameIndex)
+{
+	for (int i = 2; i >= 0; i--)
+	{
+		if (i != 0)
+		{
+			if (sameIndex[i] >= benchPtr.size())
+			{
+				boardPtr.erase(boardPtr.begin() + (sameIndex[i] - benchPtr.size()));
+			}
+			else if (sameIndex[i] < benchPtr.size())
+			{
+				benchPtr.erase(benchPtr.begin() + sameIndex[i]);
+			}
+		}
+		else if (i == 0)
+		{
+			if (sameIndex[i] >= benchPtr.size())
+			{
+				boardPtr[sameIndex[i] - benchPtr.size()]->mergeTier();
+			}
+			else if (sameIndex[i] < benchPtr.size())
+			{
+				benchPtr[sameIndex[i]]->mergeTier();
+			}
+		}
+	}
 }
