@@ -190,7 +190,8 @@ void shopping(int& goldPtr, std::vector<pawn*>& benchPtr)
 
 			char choice;
 
-			std::cout << "Choose pawn to buy: ";
+			std::cout << "(X - Exit)";
+			std::cout << "\nChoose pawn to buy: ";
 			std::cin >> choice;
 
 			if (isalnum(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < shop.size())
@@ -220,25 +221,74 @@ void shopping(int& goldPtr, std::vector<pawn*>& benchPtr)
 
 void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
 {
-	system("cls");
+	char choice;
+	bool mode = false;
 
-	std::cout << "Board [" << boardPtr.size() << "/" << boardMax << "]: " << "\n\n";
-
-	for (int i = 0; i < boardPtr.size(); i++)
+	do
 	{
-		std::cout << i + 1 << " - ";
-		boardPtr[i]->getInfo();
-	}
+		system("cls");
 
-	std::cout << "\nBench [" << benchPtr.size() << "/" << benchMax << "]: " << "\n\n";
+		std::cout << "Board [" << boardPtr.size() << "/" << boardMax << "]: " << "\n\n";
 
-	for (int i = 0; i < benchPtr.size(); i++)
-	{
-		std::cout << i + 1 << " - ";
-		benchPtr[i]->getInfo();
-	}
+		for (int i = 0; i < boardPtr.size(); i++)
+		{
+			std::cout << i + 1 << " - ";
+			boardPtr[i]->getInfo();
+		}
 
-	std::cin.ignore();
-	std::cin.clear();
-	std::cin.get();
+		std::cout << "\nBench [" << benchPtr.size() << "/" << benchMax << "]: " << "\n\n";
+
+		for (int i = 0; i < benchPtr.size(); i++)
+		{
+			std::cout << i + 1 << " - ";
+			benchPtr[i]->getInfo();
+		}
+
+		if (mode == false)
+		{
+			std::cout << "\n(S - Switch mode / X - Exit)";
+			std::cout << "\nAdd to board: ";
+			std::cin >> choice;
+
+			if (isalnum(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < benchPtr.size())
+			{
+				if (boardPtr.size() < boardMax)
+				{
+					boardPtr.push_back(benchPtr[choice - '0' - 1]);
+					benchPtr.erase((benchPtr.begin() + (choice - '0' - 1)));
+				}
+			}
+			else if (tolower(choice) == 's')
+			{
+				mode = true;
+			}
+			else if (tolower(choice == 'x'))
+			{
+				return;
+			}
+		}
+		else if (mode == true)
+		{
+			std::cout << "\n(S - Switch mode / X - Exit)";
+			std::cout << "\nRemove from board: ";
+			std::cin >> choice;
+
+			if (isalnum(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < boardPtr.size())
+			{
+				if (benchPtr.size() < benchMax)
+				{
+					benchPtr.push_back(boardPtr[choice - '0' - 1]);
+					boardPtr.erase((boardPtr.begin() + (choice - '0' - 1)));
+				}
+			}
+			else if (tolower(choice) == 's')
+			{
+				mode = false;
+			}
+			else if (tolower(choice == 'x'))
+			{
+				return;
+			}
+		}
+	} while (true);
 }
