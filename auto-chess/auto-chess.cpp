@@ -84,8 +84,9 @@ public:
 	}
 };
 
-void shopping(int& goldPtr, std::vector<pawn*>& benchPtr);
 void inGame();
+void shopping(int& goldPtr, std::vector<pawn*>& benchPtr);
+void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 
 int main()
 {
@@ -94,6 +95,48 @@ int main()
 	inGame();
 
 	system("pause>0");
+}
+
+void inGame()
+{
+	int gold = 25;
+	std::vector<pawn*> shop;
+	std::vector<pawn*> bench;
+	std::vector<pawn*> board;
+
+	char choice;
+
+	do
+	{
+		system("cls");
+
+		std::cout << "1 - Manage Board\n2 - Shop\n\nR - Ready up.";
+		std::cout << "\n\n\nChoose: ";
+		std::cin >> choice;
+
+		switch (tolower(choice))
+		{
+		case '1':
+			manageBoard(bench, board);
+			break;
+		case '2':
+			shopping(gold, bench);
+			break;
+		case 'r':
+			std::cout << "Ready!";
+			std::cin.ignore();
+			std::cin.clear();
+			std::cin.get();
+			break;
+		default:
+			break;
+		}
+	} while (true);
+
+	for (int i = 0; i < board.size(); i++)
+	{
+		board[i]->attack();
+	}
 }
 
 void shopping(int& goldPtr, std::vector<pawn*>& benchPtr)
@@ -167,23 +210,35 @@ void shopping(int& goldPtr, std::vector<pawn*>& benchPtr)
 					goldPtr -= refreshCost;
 				}
 			}
+			else if (tolower(choice == 'x'))
+			{
+				return;
+			}
 		} while (refresh == false);
 	} while (refresh == true);
 }
 
-void inGame()
+void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
 {
-	int gold = 25;
-	std::vector<pawn*> shop;
-	std::vector<pawn*> bench;
-	std::vector<pawn*> board;
+	system("cls");
 
-	shopping(gold, bench);
+	std::cout << "Board [" << boardPtr.size() << "/" << boardMax << "]: " << "\n\n";
 
-	for (int i = 0; i < board.size(); i++)
+	for (int i = 0; i < boardPtr.size(); i++)
 	{
-		board[i]->attack();
+		std::cout << i + 1 << " - ";
+		boardPtr[i]->getInfo();
 	}
-}
 
-//virtual functions
+	std::cout << "\nBench [" << benchPtr.size() << "/" << benchMax << "]: " << "\n\n";
+
+	for (int i = 0; i < benchPtr.size(); i++)
+	{
+		std::cout << i + 1 << " - ";
+		benchPtr[i]->getInfo();
+	}
+
+	std::cin.ignore();
+	std::cin.clear();
+	std::cin.get();
+}
