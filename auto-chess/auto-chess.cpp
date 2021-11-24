@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <iomanip>
 #include <string>
+#include "pawns.h"
+#include <thread>
+
+using namespace std::this_thread;     // sleep_for, sleep_until
+using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
 
 const int benchMax = 9;
 const int boardMax = 7;
@@ -10,104 +15,18 @@ const int boardMax = 7;
 const int shopMax = 5;
 const int refreshCost = 2;
 
-class pawn
-{
-protected:
-	std::string name = "DEFAULT NAME";
-	int health = 0;
-	int damage = 0;
-	int cost = 0;
-	int tier = 1;
-
-public:
-	virtual void attack()//= 0;
-	{
-		std::cout << name << " MASTER ATTACK.";
-	}
-	void getInfo()
-	{
-		std::cout << std::left << std::setw(15) << name << " Cost: " << std::setw(3) << cost << " Health: " << std::setw(6) << health << " Damage: " << std::setw(6) << damage << " Tier: " << std::setw(3) << tier << "\n";
-	}
-	int getCost()
-	{
-		return cost;
-	}
-	std::string getName()
-	{
-		return name;
-	}
-	int getTier()
-	{
-		return tier;
-	}
-	int getHealth()
-	{
-		return health;
-	}
-	void mergeTier()
-	{
-		tier++;
-	}
-};
-
-class pawn1 : public pawn
-{
-public:
-	pawn1()
-	{
-		name = "Ziutek";
-		damage = 5;
-		cost = 1;
-		health = 100;
-	}
-	void attack()
-	{
-		std::cout << name << " CHILD ATTACK.\n";
-		std::cout << damage << " CHILD DAMAGE.\n";
-	}
-};
-
-class pawn2 : public pawn
-{
-public:
-	pawn2()
-	{
-		name = "Jeremiasz";
-		damage = 10;
-		cost = 2;
-		health = 80;
-	}
-	void attack()
-	{
-		std::cout << name << " CHILD ATTACK.\n";
-		std::cout << damage << " CHILD DAMAGE.\n";
-	}
-};
-
-class pawn3 : public pawn
-{
-public:
-	pawn3()
-	{
-		name = "Marzena";
-		damage = 25;
-		cost = 3;
-		health = 50;
-	}
-	void attack()
-	{
-		std::cout << name << " CHILD ATTACK.\n";
-		std::cout << damage << " CHILD DAMAGE.\n";
-	}
-};
-
 void inGame();
 void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& shop);
 void refreshShop(std::vector<pawn*>& shop);
 void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<int> sameIndex);
-void battle(std::vector<pawn*>& boardPtr);
+void battleMenu(std::vector<pawn*>& boardPtr);
+void printBoard(std::vector<pawn*>& boardPtr);
+void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard);
+
+void timer(int seconds, std::string message);
+void timer(int seconds);
 
 int main()
 {
@@ -131,24 +50,24 @@ void inGame()
 	{
 		system("cls");
 
-		std::cout << "1 - Manage Board\n2 - Shop\n\nR - Ready up.";
+		std::cout << "1 - Shop\n2 - Manage Board\n\nR - Ready up.";
 		std::cout << "\n\n\nChoose: ";
 		std::cin >> choice;
 
 		switch (tolower(choice))
 		{
-		case '1':
+		case '2':
 			manageBoard(bench, board);
 			mergeCheck(bench, board);
 			break;
-		case '2':
+		case '1':
 			shopping(gold, bench, shop);
 			mergeCheck(bench, board);
 			break;
 		case 'r':
 			std::cout << "Ready!";
 
-			battle(board);
+			battleMenu(board);
 			break;
 		default:
 			break;
@@ -403,10 +322,53 @@ void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std:
 	}
 }
 
-void battle(std::vector<pawn*>& boardPtr)
+void battleMenu(std::vector<pawn*>& boardPtr)
 {
 	system("cls");
 
+	/////enemy placeholder
+	std::vector<pawn*> EnemyBoardDebug;
+	std::vector<pawn*> EnemyBenchEmptyDebug;
+
+	for (int i = 0; i < boardMax; i++)
+	{
+		switch (rand() % 3)
+		{
+		case 0:
+			EnemyBoardDebug.push_back(new pawn1);
+			break;
+		case 1:
+			EnemyBoardDebug.push_back(new pawn2);
+			break;
+		case 2:
+			EnemyBoardDebug.push_back(new pawn3);
+			break;
+		}
+	}
+	mergeCheck(EnemyBenchEmptyDebug, EnemyBoardDebug);
+	/////
+
+	std::cout << "Your pawns\n\n";
+	printBoard(boardPtr);
+
+	std::cout << "\n\n";
+
+	printBoard(EnemyBoardDebug);
+	std::cout << "\nEnemy pawns";
+
+	std::cout << "\n\nBattle begins in:\n";
+	timer(5, "Fight!");
+
+	//battle
+	battle(boardPtr, EnemyBoardDebug);
+	std::cout << "\nEnd of battle.\n";
+	//
+
+	timer(5);
+}
+
+void printBoard(std::vector<pawn*>& boardPtr)
+{
 	for (int i = 0; i < boardPtr.size(); i++)
 	{
 		std::cout << std::left << std::setw(15) << boardPtr[i]->getName();
@@ -429,8 +391,86 @@ void battle(std::vector<pawn*>& boardPtr)
 	}
 
 	std::cout << "\n";
+}
 
-	std::cin.ignore();
-	std::cin.clear();
-	std::cin.get();
+void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
+{
+	bool side = false;
+	int startingSide = (rand() % 2);
+
+	if (startingSide == 0)
+	{
+		bool side = true;
+	}
+	else if (startingSide == 1)
+	{
+		bool side = false;
+	}
+	else
+	{
+		exit(2137);
+	}
+
+	int playerPawnIndex = 0;
+	int enemyPawnIndex = 0;
+
+	do
+	{
+		playerPawnIndex = 0;
+		enemyPawnIndex = 0;
+
+		do
+		{
+			switch (side)
+			{
+			case true:
+				side = false;
+				if (playerPawnIndex < playerBoard.size())
+				{
+					std::cout << "Player attack - " << playerPawnIndex + 1 << "\n";
+
+					playerPawnIndex++;
+					break;
+				}
+				else
+				{
+				}
+
+			case false:
+				side = true;
+				if (enemyPawnIndex < enemyBoard.size())
+				{
+					std::cout << "Enemy attack - " << enemyPawnIndex + 1 << "\n";
+
+					enemyPawnIndex++;
+					break;
+				}
+				else
+				{
+				}
+			}
+			sleep_for(1s);
+		} while (enemyPawnIndex < enemyBoard.size() || playerPawnIndex < playerBoard.size());
+	} while (enemyBoard.size() != 0 && playerBoard.size() != 0);
+}
+
+void timer(int seconds, std::string message)
+{
+	for (int i = seconds; i > 0; i--)
+	{
+		std::cout << i << " \r";
+		sleep_for(1s);
+	}
+	std::cout << message << "\r\n";
+	sleep_for(1s);
+}
+
+void timer(int seconds)
+{
+	for (int i = seconds; i > 0; i--)
+	{
+		std::cout << i << " \r";
+		sleep_for(1s);
+	}
+	std::cout << "  \r\n";
 }
