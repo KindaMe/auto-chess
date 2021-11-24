@@ -46,6 +46,19 @@ public:
 	void mergeTier()
 	{
 		tier++;
+		switch (tier)
+		{
+		case 1:
+			break;
+		case 2:
+			damage = baseDamage * 2;
+			health = baseHealth * 2;
+			break;
+		case 3:
+			damage = baseDamage * 3;
+			health = baseHealth * 3;
+			break;
+		}
 	}
 	void recieveDamage(int damage)
 	{

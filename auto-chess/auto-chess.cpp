@@ -346,10 +346,8 @@ void battleMenu(std::vector<pawn*>& boardPtr)
 	std::cout << "\n\nBattle begins in:\n";
 	timer(5, "Fight!");
 
-	//battle
 	battle(boardPtr, EnemyBoardDebug);
 	std::cout << "\nEnd of battle.\n";
-	//
 
 	timer(5);
 }
@@ -358,11 +356,13 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 {
 	system("cls");
 
-	std::cout << "Your pawns\n\n";
+	std::cout << "Your pawns";
+	std::cout << "\n" << std::string(boardMax * 15, '-') << "\n";
 
 	for (int i = 0; i < playerBoard.size(); i++)
 	{
-		std::cout << std::left << std::setw(15) << playerBoard[i]->getName();
+		std::string temp = "Health: " + std::to_string(playerBoard[i]->getHealth());
+		std::cout << std::left << std::setw(15) << temp;
 	}
 
 	std::cout << "\n";
@@ -373,22 +373,21 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 		std::cout << std::left << std::setw(15) << temp;
 	}
 
-	std::cout << "\n";
+	std::cout << "\n\n";
 
 	for (int i = 0; i < playerBoard.size(); i++)
 	{
-		std::string temp = "Health: " + std::to_string(playerBoard[i]->getHealth());
-		std::cout << std::left << std::setw(15) << temp;
+		std::cout << std::left << std::setw(15) << playerBoard[i]->getName();
 	}
 
-	std::cout << "\n\n";
+	std::cout << "\n" << std::string(boardMax * 15, '-') << "\n";
 
 	for (int i = 0; i < enemyBoard.size(); i++)
 	{
 		std::cout << std::left << std::setw(15) << enemyBoard[i]->getName();
 	}
 
-	std::cout << "\n";
+	std::cout << "\n\n";
 
 	for (int i = 0; i < enemyBoard.size(); i++)
 	{
@@ -404,7 +403,8 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 		std::cout << std::left << std::setw(15) << temp;
 	}
 
-	std::cout << "\n\nEnemy pawns\n";
+	std::cout << "\n" << std::string(boardMax * 15, '-') << "\n";
+	std::cout << "Enemy pawns\n";
 }
 
 void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
