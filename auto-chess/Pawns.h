@@ -19,7 +19,7 @@ protected:
 	int tier = 1;
 
 public:
-	virtual void attack()//= 0;
+	virtual void attack(std::vector<pawn*>& boardToAttack)//= 0;
 	{
 		std::cout << name << " MASTER ATTACK.";
 	}
@@ -47,6 +47,10 @@ public:
 	{
 		tier++;
 	}
+	void recieveDamage(int damage)
+	{
+		health -= damage;
+	}
 };
 
 class pawn1 : public pawn
@@ -62,10 +66,18 @@ public:
 		health = baseHealth;
 		baseMana = 100;
 	}
-	void attack()
+	void attack(std::vector<pawn*>& boardToAttack)
 	{
-		std::cout << name << " CHILD ATTACK.\n";
-		std::cout << damage << " CHILD DAMAGE.\n";
+		int attackMaxIndex = boardToAttack.size();
+		int attackIndex;
+
+		attackIndex = rand() % attackMaxIndex;
+
+		boardToAttack[attackIndex]->recieveDamage(damage);
+		if (boardToAttack[attackIndex]->getHealth() <= 0)
+		{
+			boardToAttack.erase(boardToAttack.begin() + attackIndex);
+		}
 	}
 };
 
@@ -82,10 +94,21 @@ public:
 		health = baseHealth;
 		baseMana = 60;
 	}
-	void attack()
+	void attack(std::vector<pawn*>& boardToAttack)
 	{
-		std::cout << name << " CHILD ATTACK.\n";
-		std::cout << damage << " CHILD DAMAGE.\n";
+		/*std::cout << name << " CHILD ATTACK.\n";
+		std::cout << damage << " CHILD DAMAGE.\n";*/
+
+		int attackMaxIndex = boardToAttack.size();
+		int attackIndex;
+
+		attackIndex = rand() % attackMaxIndex;
+
+		boardToAttack[attackIndex]->recieveDamage(damage);
+		if (boardToAttack[attackIndex]->getHealth() <= 0)
+		{
+			boardToAttack.erase(boardToAttack.begin() + attackIndex);
+		}
 	}
 };
 
@@ -102,9 +125,17 @@ public:
 		health = baseHealth;
 		baseMana = 30;
 	}
-	void attack()
+	void attack(std::vector<pawn*>& boardToAttack)
 	{
-		std::cout << name << " CHILD ATTACK.\n";
-		std::cout << damage << " CHILD DAMAGE.\n";
+		int attackMaxIndex = boardToAttack.size();
+		int attackIndex;
+
+		attackIndex = rand() % attackMaxIndex;
+
+		boardToAttack[attackIndex]->recieveDamage(damage);
+		if (boardToAttack[attackIndex]->getHealth() <= 0)
+		{
+			boardToAttack.erase(boardToAttack.begin() + attackIndex);
+		}
 	}
 };

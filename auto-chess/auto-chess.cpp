@@ -22,7 +22,7 @@ void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<int> sameIndex);
 void battleMenu(std::vector<pawn*>& boardPtr);
-void printBoard(std::vector<pawn*>& boardPtr);
+void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard);
 void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard);
 
 void timer(int seconds, std::string message);
@@ -73,11 +73,6 @@ void inGame()
 			break;
 		}
 	} while (true);
-
-	for (int i = 0; i < board.size(); i++)
-	{
-		board[i]->attack();
-	}
 }
 
 void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& shop)
@@ -324,8 +319,6 @@ void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std:
 
 void battleMenu(std::vector<pawn*>& boardPtr)
 {
-	system("cls");
-
 	/////enemy placeholder
 	std::vector<pawn*> EnemyBoardDebug;
 	std::vector<pawn*> EnemyBenchEmptyDebug;
@@ -348,13 +341,7 @@ void battleMenu(std::vector<pawn*>& boardPtr)
 	mergeCheck(EnemyBenchEmptyDebug, EnemyBoardDebug);
 	/////
 
-	std::cout << "Your pawns\n\n";
-	printBoard(boardPtr);
-
-	std::cout << "\n\n";
-
-	printBoard(EnemyBoardDebug);
-	std::cout << "\nEnemy pawns";
+	printBoard(boardPtr, EnemyBoardDebug);
 
 	std::cout << "\n\nBattle begins in:\n";
 	timer(5, "Fight!");
@@ -367,91 +354,113 @@ void battleMenu(std::vector<pawn*>& boardPtr)
 	timer(5);
 }
 
-void printBoard(std::vector<pawn*>& boardPtr)
+void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 {
-	for (int i = 0; i < boardPtr.size(); i++)
+	system("cls");
+
+	std::cout << "Your pawns\n\n";
+
+	for (int i = 0; i < playerBoard.size(); i++)
 	{
-		std::cout << std::left << std::setw(15) << boardPtr[i]->getName();
+		std::cout << std::left << std::setw(15) << playerBoard[i]->getName();
 	}
 
 	std::cout << "\n";
 
-	for (int i = 0; i < boardPtr.size(); i++)
+	for (int i = 0; i < playerBoard.size(); i++)
 	{
-		std::string temp = "Tier: " + std::to_string(boardPtr[i]->getTier());
+		std::string temp = "Tier: " + std::to_string(playerBoard[i]->getTier());
 		std::cout << std::left << std::setw(15) << temp;
 	}
 
 	std::cout << "\n";
 
-	for (int i = 0; i < boardPtr.size(); i++)
+	for (int i = 0; i < playerBoard.size(); i++)
 	{
-		std::string temp = "Health: " + std::to_string(boardPtr[i]->getHealth());
+		std::string temp = "Health: " + std::to_string(playerBoard[i]->getHealth());
+		std::cout << std::left << std::setw(15) << temp;
+	}
+
+	std::cout << "\n\n";
+
+	for (int i = 0; i < enemyBoard.size(); i++)
+	{
+		std::cout << std::left << std::setw(15) << enemyBoard[i]->getName();
+	}
+
+	std::cout << "\n";
+
+	for (int i = 0; i < enemyBoard.size(); i++)
+	{
+		std::string temp = "Tier: " + std::to_string(enemyBoard[i]->getTier());
 		std::cout << std::left << std::setw(15) << temp;
 	}
 
 	std::cout << "\n";
+
+	for (int i = 0; i < enemyBoard.size(); i++)
+	{
+		std::string temp = "Health: " + std::to_string(enemyBoard[i]->getHealth());
+		std::cout << std::left << std::setw(15) << temp;
+	}
+
+	std::cout << "\n\nEnemy pawns\n";
 }
 
 void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 {
-	bool side = false;
-	int startingSide = (rand() % 2);
+	int counter;
 
-	if (startingSide == 0)
+	while (true)
 	{
-		bool side = true;
-	}
-	else if (startingSide == 1)
-	{
-		bool side = false;
-	}
-	else
-	{
-		exit(2137);
-	}
+		//make it so team with less pawns starts
 
-	int playerPawnIndex = 0;
-	int enemyPawnIndex = 0;
-
-	do
-	{
-		playerPawnIndex = 0;
-		enemyPawnIndex = 0;
-
-		do
+		if (enemyBoard.size() > playerBoard.size())
 		{
-			switch (side)
+			counter = enemyBoard.size();
+		}
+		else
+		{
+			counter = playerBoard.size();
+		}
+
+		for (int i = 0; i < counter; i++)
+		{
+			if (enemyBoard.size() == 0)
 			{
-			case true:
-				side = false;
-				if (playerPawnIndex < playerBoard.size())
+				printBoard(playerBoard, enemyBoard);
+				std::cout << "\nYou won!\n";
+				return;
+			}
+			else if (playerBoard.size() == 0)
+			{
+				printBoard(playerBoard, enemyBoard);
+				std::cout << "\nYou lost.\n";
+				return;
+			}
+			else
+			{
+				if (i < playerBoard.size())
 				{
-					std::cout << "Player attack - " << playerPawnIndex + 1 << "\n";
+					playerBoard[i]->attack(enemyBoard);
 
-					playerPawnIndex++;
-					break;
-				}
-				else
-				{
-				}
+					printBoard(playerBoard, enemyBoard);
+					std::cout << "\n\n" << playerBoard[i]->getName() << " attacked!" << "\n";
 
-			case false:
-				side = true;
-				if (enemyPawnIndex < enemyBoard.size())
-				{
-					std::cout << "Enemy attack - " << enemyPawnIndex + 1 << "\n";
-
-					enemyPawnIndex++;
-					break;
+					sleep_for(1s);
 				}
-				else
+				if (i < enemyBoard.size())
 				{
+					enemyBoard[i]->attack(playerBoard);
+
+					printBoard(playerBoard, enemyBoard);
+					std::cout << "\n\n" << enemyBoard[i]->getName() << " attacked!" << "\n";
+
+					sleep_for(1s);
 				}
 			}
-			sleep_for(1s);
-		} while (enemyPawnIndex < enemyBoard.size() || playerPawnIndex < playerBoard.size());
-	} while (enemyBoard.size() != 0 && playerBoard.size() != 0);
+		}
+	}
 }
 
 void timer(int seconds, std::string message)
