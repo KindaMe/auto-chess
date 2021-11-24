@@ -2,6 +2,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <iomanip>
+#include <string>
 
 const int benchMax = 9;
 const int boardMax = 7;
@@ -38,6 +39,10 @@ public:
 	int getTier()
 	{
 		return tier;
+	}
+	int getHealth()
+	{
+		return health;
 	}
 	void mergeTier()
 	{
@@ -102,6 +107,7 @@ void refreshShop(std::vector<pawn*>& shop);
 void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<int> sameIndex);
+void battle(std::vector<pawn*>& boardPtr);
 
 int main()
 {
@@ -141,9 +147,8 @@ void inGame()
 			break;
 		case 'r':
 			std::cout << "Ready!";
-			std::cin.ignore();
-			std::cin.clear();
-			std::cin.get();
+
+			battle(board);
 			break;
 		default:
 			break;
@@ -396,4 +401,36 @@ void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std:
 			}
 		}
 	}
+}
+
+void battle(std::vector<pawn*>& boardPtr)
+{
+	system("cls");
+
+	for (int i = 0; i < boardPtr.size(); i++)
+	{
+		std::cout << std::left << std::setw(15) << boardPtr[i]->getName();
+	}
+
+	std::cout << "\n";
+
+	for (int i = 0; i < boardPtr.size(); i++)
+	{
+		std::string temp = "Tier: " + std::to_string(boardPtr[i]->getTier());
+		std::cout << std::left << std::setw(15) << temp;
+	}
+
+	std::cout << "\n";
+
+	for (int i = 0; i < boardPtr.size(); i++)
+	{
+		std::string temp = "Health: " + std::to_string(boardPtr[i]->getHealth());
+		std::cout << std::left << std::setw(15) << temp;
+	}
+
+	std::cout << "\n";
+
+	std::cin.ignore();
+	std::cin.clear();
+	std::cin.get();
 }
