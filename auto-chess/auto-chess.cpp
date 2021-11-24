@@ -39,7 +39,7 @@ int main()
 
 void inGame()
 {
-	int gold = 25;
+	int gold = 50;
 	std::vector<pawn*> shop;
 	std::vector<pawn*> bench;
 	std::vector<pawn*> board;
@@ -347,6 +347,11 @@ void battleMenu(std::vector<pawn*>& boardPtr)
 	timer(5, "Fight!");
 
 	battle(boardPtr, EnemyBoardDebug);
+	for (int i = 0; i < boardPtr.size(); i++)//reset stats
+	{
+		boardPtr[i]->updateStats();
+	}
+
 	std::cout << "\nEnd of battle.\n";
 
 	timer(5);

@@ -7,12 +7,14 @@
 class pawn
 {
 protected:
+	std::string name = "DEFAULT NAME";
 	int baseHealth = 0;
 	int baseMana = 0;
 	int baseDamage = 0;
+	int baseCost = 0;
 
-	std::string name = "DEFAULT NAME";
 	int health = 0;
+	int maxMana = 0;
 	int mana = 0;
 	int damage = 0;
 	int cost = 0;
@@ -25,7 +27,7 @@ public:
 	}
 	void getInfo()
 	{
-		std::cout << std::left << std::setw(15) << name << " Cost: " << std::setw(3) << cost << " Health: " << std::setw(6) << health << " Damage: " << std::setw(6) << damage << " Tier: " << std::setw(3) << tier << "\n";
+		std::cout << std::left << std::setw(15) << name << " Cost: " << std::setw(3) << cost << " Health: " << std::setw(6) << health << " Damage: " << std::setw(6) << damage << " Mana: " << std::setw(5) << maxMana << " Tier: " << std::setw(3) << tier << "\n";
 	}
 	int getCost()
 	{
@@ -46,23 +48,40 @@ public:
 	void mergeTier()
 	{
 		tier++;
-		switch (tier)
-		{
-		case 1:
-			break;
-		case 2:
-			damage = baseDamage * 2;
-			health = baseHealth * 2;
-			break;
-		case 3:
-			damage = baseDamage * 3;
-			health = baseHealth * 3;
-			break;
-		}
+		updateStats();
 	}
 	void recieveDamage(int damage)
 	{
 		health -= damage;
+	}
+	void updateStats()
+	{
+		switch (tier)
+		{
+		case 1:
+			health = baseHealth;
+			maxMana = baseMana;
+			mana = 0;
+			damage = baseDamage;
+			cost = baseCost;
+
+			break;
+		case 2:
+			health = baseHealth * 2;
+			maxMana = baseMana / 2;
+			mana = 0;
+			damage = baseDamage * 2;
+			cost = baseCost * 3;
+
+			break;
+		case 3:
+			health = baseHealth * 3;
+			maxMana = baseMana / 3;
+			mana = 0;
+			damage = baseDamage * 3;
+			cost = baseCost * 9;
+			break;
+		}
 	}
 };
 
@@ -72,12 +91,11 @@ public:
 	pawn1()
 	{
 		name = "Ziutek";
-		baseDamage = 5;
-		damage = baseDamage;
-		cost = 1;
 		baseHealth = 100;
-		health = baseHealth;
 		baseMana = 100;
+		baseDamage = 5;
+		baseCost = 1;
+		updateStats();
 	}
 	void attack(std::vector<pawn*>& boardToAttack)
 	{
@@ -100,12 +118,11 @@ public:
 	pawn2()
 	{
 		name = "Jeremiasz";
-		baseDamage = 10;
-		damage = baseDamage;
-		cost = 2;
 		baseHealth = 80;
-		health = baseHealth;
 		baseMana = 60;
+		baseDamage = 10;
+		baseCost = 2;
+		updateStats();
 	}
 	void attack(std::vector<pawn*>& boardToAttack)
 	{
@@ -131,12 +148,11 @@ public:
 	pawn3()
 	{
 		name = "Marzena";
-		baseDamage = 25;
-		damage = baseDamage;
-		cost = 3;
 		baseHealth = 50;
-		health = baseHealth;
 		baseMana = 30;
+		baseDamage = 25;
+		baseCost = 3;
+		updateStats();
 	}
 	void attack(std::vector<pawn*>& boardToAttack)
 	{
