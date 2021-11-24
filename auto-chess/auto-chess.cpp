@@ -97,7 +97,8 @@ public:
 };
 
 void inGame();
-void shopping(int& goldPtr, std::vector<pawn*>& benchPtr);
+void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& shop);
+void refreshShop(std::vector<pawn*>& shop);
 void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<int> sameIndex);
@@ -135,7 +136,7 @@ void inGame()
 			mergeCheck(bench, board);
 			break;
 		case '2':
-			shopping(gold, bench);
+			shopping(gold, bench, shop);
 			mergeCheck(bench, board);
 			break;
 		case 'r':
@@ -155,84 +156,79 @@ void inGame()
 	}
 }
 
-void shopping(int& goldPtr, std::vector<pawn*>& benchPtr)
+void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& shop)
 {
-	std::vector<pawn*> shop;
-
-	bool refresh = false;
-
 	do
 	{
-		refresh = false;
-		shop.clear();
+		system("cls");
 
-		for (int i = 0; i < shopMax; i++)
+		std::cout << "Shop [" << shop.size() << "/" << shopMax << "]: " << "\n\n";
+		for (int i = 0; i < shop.size(); i++)
 		{
-			switch (rand() % 3)
-			{
-			case 0:
-				shop.push_back(new pawn1);
-				break;
-			case 1:
-				shop.push_back(new pawn2);
-				break;
-			case 2:
-				shop.push_back(new pawn3);
-				break;
-			}
+			std::cout << i + 1 << " - ";
+			shop[i]->getInfo();
+		}
+		std::cout << "\nR - Refresh (" << refreshCost << " gold) " << "\n\n";
+
+		std::cout << "\nBench [" << benchPtr.size() << "/" << benchMax << "]: " << "\n\n";
+
+		for (int i = 0; i < benchPtr.size(); i++)
+		{
+			std::cout << i + 1 << " - ";
+			benchPtr[i]->getInfo();
 		}
 
-		do
+		std::cout << "\n\nGold: " << goldPtr << "\n\n";
+
+		char choice;
+
+		std::cout << "(X - Exit)";
+		std::cout << "\nChoose pawn to buy: ";
+		std::cin >> choice;
+
+		if (isalnum(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < shop.size())
 		{
-			system("cls");
-
-			std::cout << "Shop [" << shop.size() << "/" << shopMax << "]: " << "\n\n";
-			for (int i = 0; i < shop.size(); i++)
+			if (goldPtr - shop[choice - '0' - 1]->getCost() >= 0 && benchPtr.size() < benchMax)
 			{
-				std::cout << i + 1 << " - ";
-				shop[i]->getInfo();
+				goldPtr -= shop[choice - '0' - 1]->getCost();
+				benchPtr.push_back(shop[choice - '0' - 1]);
+				shop.erase((shop.begin() + (choice - '0' - 1)));
 			}
-			std::cout << "\nR - Refresh (" << refreshCost << " gold) " << "\n\n";
-
-			std::cout << "\nBench [" << benchPtr.size() << "/" << benchMax << "]: " << "\n\n";
-
-			for (int i = 0; i < benchPtr.size(); i++)
+		}
+		else if (tolower(choice) == 'r')
+		{
+			if (goldPtr - refreshCost >= 0)
 			{
-				std::cout << i + 1 << " - ";
-				benchPtr[i]->getInfo();
+				goldPtr -= refreshCost;
+				refreshShop(shop);
 			}
+		}
+		else if (tolower(choice == 'x'))
+		{
+			return;
+		}
+	} while (true);
+}
 
-			std::cout << "\n\nGold: " << goldPtr << "\n\n";
+void refreshShop(std::vector<pawn*>& shop)
+{
+	shop.clear();
 
-			char choice;
-
-			std::cout << "(X - Exit)";
-			std::cout << "\nChoose pawn to buy: ";
-			std::cin >> choice;
-
-			if (isalnum(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < shop.size())
-			{
-				if (goldPtr - shop[choice - '0' - 1]->getCost() >= 0 && benchPtr.size() < benchMax)
-				{
-					goldPtr -= shop[choice - '0' - 1]->getCost();
-					benchPtr.push_back(shop[choice - '0' - 1]);
-					shop.erase((shop.begin() + (choice - '0' - 1)));
-				}
-			}
-			else if (tolower(choice) == 'r')
-			{
-				if (goldPtr - refreshCost >= 0)
-				{
-					refresh = true;
-					goldPtr -= refreshCost;
-				}
-			}
-			else if (tolower(choice == 'x'))
-			{
-				return;
-			}
-		} while (refresh == false);
-	} while (refresh == true);
+	for (int i = 0; i < shopMax; i++)
+	{
+		switch (rand() % 3)
+		{
+		case 0:
+			shop.push_back(new pawn1);
+			break;
+		case 1:
+			shop.push_back(new pawn2);
+			break;
+		case 2:
+			shop.push_back(new pawn3);
+			break;
+		}
+	}
 }
 
 void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
