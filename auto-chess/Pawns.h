@@ -27,7 +27,7 @@ public:
 	}
 	void getInfo()
 	{
-		std::cout << std::left << std::setw(15) << name << " Cost: " << std::setw(3) << cost << " Health: " << std::setw(6) << health << " Damage: " << std::setw(6) << damage << " Mana: " << std::setw(5) << maxMana << " Tier: " << std::setw(3) << tier << "\n";
+		std::cout << std::left << std::setw(15) << name << " Cost: " << std::setw(3) << cost << " Damage: " << std::setw(6) << damage << " Health: " << std::setw(6) << health << " Mana: " << std::setw(5) << maxMana << " Tier: " << std::setw(3) << tier << "\n";
 	}
 	int getCost()
 	{
@@ -126,9 +126,6 @@ public:
 	}
 	void attack(std::vector<pawn*>& boardToAttack)
 	{
-		/*std::cout << name << " CHILD ATTACK.\n";
-		std::cout << damage << " CHILD DAMAGE.\n";*/
-
 		int attackMaxIndex = boardToAttack.size();
 		int attackIndex;
 

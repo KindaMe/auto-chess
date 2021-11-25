@@ -77,6 +77,9 @@ void inGame()
 
 void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& shop)
 {
+	char mode = 'b';
+	char choice;
+
 	do
 	{
 		system("cls");
@@ -99,20 +102,32 @@ void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& sh
 
 		std::cout << "\n\nGold: " << goldPtr << "\n\n";
 
-		char choice;
+		std::cout << "Switch mode - S / Refresh shop - R\nOr ";
+		(mode == 'b') ? std::cout << "choose pawn to buy: " : std::cout << "choose pawn to sell: ";
 
-		std::cout << "(X - Exit)";
-		std::cout << "\nChoose pawn to buy: ";
 		std::cin >> choice;
 
-		if (isalnum(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < shop.size())
+		if (isdigit(choice) && (choice - '0' - 1) >= 0)
 		{
-			if (goldPtr - shop[choice - '0' - 1]->getCost() >= 0 && benchPtr.size() < benchMax)
+			if (mode == 'b' && (choice - '0' - 1) < shop.size())
 			{
-				goldPtr -= shop[choice - '0' - 1]->getCost();
-				benchPtr.push_back(shop[choice - '0' - 1]);
-				shop.erase((shop.begin() + (choice - '0' - 1)));
+				if (goldPtr - shop[choice - '0' - 1]->getCost() >= 0 && benchPtr.size() < benchMax)
+				{
+					goldPtr -= shop[choice - '0' - 1]->getCost();
+					benchPtr.push_back(shop[choice - '0' - 1]);
+					shop.erase((shop.begin() + (choice - '0' - 1)));
+				}
 			}
+			else if (mode == 's' && (choice - '0' - 1) < benchPtr.size())
+			{
+				goldPtr += benchPtr[choice - '0' - 1]->getCost();
+				delete benchPtr[choice - '0' - 1];
+				benchPtr.erase((benchPtr.begin() + (choice - '0' - 1)));
+			}
+		}
+		else if (tolower(choice) == 's')
+		{
+			(mode == 'b') ? mode = 's' : mode = 'b';
 		}
 		else if (tolower(choice) == 'r')
 		{
@@ -181,7 +196,7 @@ void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
 			std::cout << "\nAdd to board: ";
 			std::cin >> choice;
 
-			if (isalnum(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < benchPtr.size())
+			if (isdigit(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < benchPtr.size())
 			{
 				if (boardPtr.size() < boardMax)
 				{
@@ -204,7 +219,7 @@ void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
 			std::cout << "\nRemove from board: ";
 			std::cin >> choice;
 
-			if (isalnum(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < boardPtr.size())
+			if (isdigit(choice) && (choice - '0' - 1) >= 0 && (choice - '0' - 1) < boardPtr.size())
 			{
 				if (benchPtr.size() < benchMax)
 				{
@@ -252,9 +267,7 @@ void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
 			{
 				if (i < benchPtr.size() && benchPtr[i]->getName() == tempPawn->getName() && benchPtr[i]->getTier() == tempPawn->getTier() && i != h)
 				{
-					//std::cout << "\nbench//";
 					sameIndex.push_back(i);
-					//benchPtr[i]->getInfo();
 
 					if (sameIndex.size() == 3)
 					{
@@ -266,9 +279,7 @@ void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
 				}
 				else if (i >= benchPtr.size() && boardPtr[i - benchPtr.size()]->getName() == tempPawn->getName() && boardPtr[i - benchPtr.size()]->getTier() == tempPawn->getTier() && i != h)
 				{
-					//std::cout << "\nboard//";
 					sameIndex.push_back(i);
-					//boardPtr[i - benchPtr.size()]->getInfo();
 
 					if (sameIndex.size() == 3)
 					{
@@ -282,10 +293,6 @@ void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr)
 		}
 	restartOnMerge: {}
 	} while (merged == true);
-
-	/*std::cin.ignore();
-	std::cin.clear();
-	std::cin.get();*/
 }
 
 void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<int> sameIndex)
