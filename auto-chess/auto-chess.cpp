@@ -5,6 +5,8 @@
 #include <string>
 #include "pawns.h"
 #include <thread>
+#include <conio.h>
+#include "color.h"
 
 using namespace std::this_thread;     // sleep_for, sleep_until
 using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
@@ -373,8 +375,24 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 
 	for (int i = 0; i < playerBoard.size(); i++)
 	{
-		std::string temp = "Health: " + std::to_string(playerBoard[i]->getHealth());
+		std::string temp = "Mana: " + std::to_string(playerBoard[i]->getManaToCast());
 		std::cout << std::left << std::setw(15) << temp;
+	}
+
+	std::cout << "\n";
+
+	for (int i = 0; i < playerBoard.size(); i++)
+	{
+		std::string temp = "Health: " + std::to_string(playerBoard[i]->getHealth());
+
+		if (playerBoard[i]->wereDamagedRecently())
+		{
+			std::cout << std::left << std::setw(15) << dye::red(temp);
+		}
+		else
+		{
+			std::cout << std::left << std::setw(15) << temp;
+		}
 	}
 
 	std::cout << "\n";
@@ -412,6 +430,22 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 	for (int i = 0; i < enemyBoard.size(); i++)
 	{
 		std::string temp = "Health: " + std::to_string(enemyBoard[i]->getHealth());
+
+		if (enemyBoard[i]->wereDamagedRecently())
+		{
+			std::cout << std::left << std::setw(15) << dye::red(temp);
+		}
+		else
+		{
+			std::cout << std::left << std::setw(15) << temp;
+		}
+	}
+
+	std::cout << "\n";
+
+	for (int i = 0; i < enemyBoard.size(); i++)
+	{
+		std::string temp = "Mana: " + std::to_string(enemyBoard[i]->getManaToCast());
 		std::cout << std::left << std::setw(15) << temp;
 	}
 
@@ -454,21 +488,34 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 			{
 				if (i < playerBoard.size())
 				{
-					playerBoard[i]->attack(enemyBoard);
+					playerBoard[i]->attack(enemyBoard, playerBoard);
 
 					printBoard(playerBoard, enemyBoard);
-					std::cout << "\n\n" << playerBoard[i]->getName() << " attacked!" << "\n";
+					std::cout << "\n\n" << i << " " << playerBoard[i]->getName() << " attacked!" << "\n";
 
 					sleep_for(1s);
 				}
+
+				//reset recentlyDamaged flag
+				for (int i = 0; i < enemyBoard.size(); i++)
+				{
+					enemyBoard[i]->recentlyDamagedReset();
+				}
+
 				if (i < enemyBoard.size())
 				{
-					enemyBoard[i]->attack(playerBoard);
+					enemyBoard[i]->attack(playerBoard, enemyBoard);
 
 					printBoard(playerBoard, enemyBoard);
-					std::cout << "\n\n" << enemyBoard[i]->getName() << " attacked!" << "\n";
+					std::cout << "\n\n" << i << " " << enemyBoard[i]->getName() << " attacked!" << "\n";
 
 					sleep_for(1s);
+				}
+
+				//reset recentlyDamaged flag
+				for (int i = 0; i < playerBoard.size(); i++)
+				{
+					playerBoard[i]->recentlyDamagedReset();
 				}
 			}
 		}

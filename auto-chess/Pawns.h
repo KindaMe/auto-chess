@@ -20,11 +20,11 @@ protected:
 	int cost = 0;
 	int tier = 1;
 
+	bool recentlyDamaged = false;
+
 public:
-	virtual void attack(std::vector<pawn*>& boardToAttack)//= 0;
-	{
-		std::cout << name << " MASTER ATTACK.";
-	}
+	virtual void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
+	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
 	void getInfo()
 	{
 		std::cout << std::left << std::setw(15) << name << " Cost: " << std::setw(3) << cost << " Damage: " << std::setw(6) << damage << " Health: " << std::setw(6) << health << " Mana: " << std::setw(5) << maxMana << " Tier: " << std::setw(3) << tier << "\n";
@@ -45,6 +45,14 @@ public:
 	{
 		return health;
 	}
+	int getManaToCast()
+	{
+		return maxMana - mana;
+	}
+	int wereDamagedRecently()
+	{
+		return recentlyDamaged;
+	}
 	void mergeTier()
 	{
 		tier++;
@@ -53,6 +61,11 @@ public:
 	void recieveDamage(int damage)
 	{
 		health -= damage;
+		recentlyDamaged = true;
+	}
+	void recentlyDamagedReset()
+	{
+		recentlyDamaged = false;
 	}
 	void updateStats()
 	{
@@ -97,18 +110,42 @@ public:
 		baseCost = 1;
 		updateStats();
 	}
-	void attack(std::vector<pawn*>& boardToAttack)
+	void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
-		int attackMaxIndex = boardToAttack.size();
-		int attackIndex;
-
-		attackIndex = rand() % attackMaxIndex;
-
-		boardToAttack[attackIndex]->recieveDamage(damage);
-		if (boardToAttack[attackIndex]->getHealth() <= 0)
+		if (mana == maxMana)
 		{
-			boardToAttack.erase(boardToAttack.begin() + attackIndex);
+			ability(boardToAttack, attackingBoard);
 		}
+		else
+		{
+			int attackMaxIndex = boardToAttack.size();
+			int attackIndex;
+
+			attackIndex = rand() % attackMaxIndex;
+
+			boardToAttack[attackIndex]->recieveDamage(damage);
+			if (boardToAttack[attackIndex]->getHealth() <= 0)
+			{
+				boardToAttack.erase(boardToAttack.begin() + attackIndex);
+			}
+
+			if (mana + 10 > maxMana)
+			{
+				mana = maxMana;
+			}
+			else
+			{
+				mana += 10;
+			}
+		}
+	}
+	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	{
+		std::cout << "casted ability debug";
+		mana = 0;
+		std::cin.ignore();
+		std::cin.clear();
+		std::cin.get();
 	}
 };
 
@@ -124,18 +161,42 @@ public:
 		baseCost = 2;
 		updateStats();
 	}
-	void attack(std::vector<pawn*>& boardToAttack)
+	void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
-		int attackMaxIndex = boardToAttack.size();
-		int attackIndex;
-
-		attackIndex = rand() % attackMaxIndex;
-
-		boardToAttack[attackIndex]->recieveDamage(damage);
-		if (boardToAttack[attackIndex]->getHealth() <= 0)
+		if (mana == maxMana)
 		{
-			boardToAttack.erase(boardToAttack.begin() + attackIndex);
+			ability(boardToAttack, attackingBoard);
 		}
+		else
+		{
+			int attackMaxIndex = boardToAttack.size();
+			int attackIndex;
+
+			attackIndex = rand() % attackMaxIndex;
+
+			boardToAttack[attackIndex]->recieveDamage(damage);
+			if (boardToAttack[attackIndex]->getHealth() <= 0)
+			{
+				boardToAttack.erase(boardToAttack.begin() + attackIndex);
+			}
+
+			if (mana + 10 > maxMana)
+			{
+				mana = maxMana;
+			}
+			else
+			{
+				mana += 10;
+			}
+		}
+	}
+	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	{
+		std::cout << "casted ability debug";
+		mana = 0;
+		std::cin.ignore();
+		std::cin.clear();
+		std::cin.get();
 	}
 };
 
@@ -151,17 +212,41 @@ public:
 		baseCost = 3;
 		updateStats();
 	}
-	void attack(std::vector<pawn*>& boardToAttack)
+	void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
-		int attackMaxIndex = boardToAttack.size();
-		int attackIndex;
-
-		attackIndex = rand() % attackMaxIndex;
-
-		boardToAttack[attackIndex]->recieveDamage(damage);
-		if (boardToAttack[attackIndex]->getHealth() <= 0)
+		if (mana == maxMana)
 		{
-			boardToAttack.erase(boardToAttack.begin() + attackIndex);
+			ability(boardToAttack, attackingBoard);
 		}
+		else
+		{
+			int attackMaxIndex = boardToAttack.size();
+			int attackIndex;
+
+			attackIndex = rand() % attackMaxIndex;
+
+			boardToAttack[attackIndex]->recieveDamage(damage);
+			if (boardToAttack[attackIndex]->getHealth() <= 0)
+			{
+				boardToAttack.erase(boardToAttack.begin() + attackIndex);
+			}
+
+			if (mana + 10 > maxMana)
+			{
+				mana = maxMana;
+			}
+			else
+			{
+				mana += 10;
+			}
+		}
+	}
+	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	{
+		std::cout << "casted ability debug";
+		mana = 0;
+		std::cin.ignore();
+		std::cin.clear();
+		std::cin.get();
 	}
 };
