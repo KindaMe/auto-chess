@@ -13,6 +13,7 @@ protected:
 	int baseDamage = 0;
 	int baseCost = 0;
 
+	int maxHealth = 0;
 	int health = 0;
 	int maxMana = 0;
 	int mana = 0;
@@ -21,6 +22,7 @@ protected:
 	int tier = 1;
 
 	bool recentlyDamaged = false;
+	bool recentlyHealed = false;
 
 public:
 	virtual void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
@@ -45,13 +47,21 @@ public:
 	{
 		return health;
 	}
-	int getManaToCast()
+	int getMana()
 	{
-		return maxMana - mana;
+		return mana;
 	}
-	int wereDamagedRecently()
+	int getMaxMana()
+	{
+		return maxMana;
+	}
+	bool wereDamagedRecently()
 	{
 		return recentlyDamaged;
+	}
+	bool wereHealedRecently()
+	{
+		return recentlyHealed;
 	}
 	void mergeTier()
 	{
@@ -63,32 +73,55 @@ public:
 		health -= damage;
 		recentlyDamaged = true;
 	}
-	void recentlyDamagedReset()
+	void recieveHeal(bool canOverheal, int heal)
+	{
+		switch (canOverheal)
+		{
+		case true:
+			health += heal;
+			break;
+		case false:
+			if (health + heal > maxHealth)
+			{
+				health = maxHealth;
+			}
+			else
+			{
+				health += heal;
+			}
+			break;
+		}
+		recentlyHealed = true;
+	}
+	void recentlyReset()
 	{
 		recentlyDamaged = false;
+		recentlyHealed = false;
 	}
 	void updateStats()
 	{
 		switch (tier)
 		{
 		case 1:
-			health = baseHealth;
+
+			maxHealth = baseHealth;
+			health = maxHealth;
 			maxMana = baseMana;
 			mana = 0;
 			damage = baseDamage;
 			cost = baseCost;
-
 			break;
 		case 2:
-			health = baseHealth * 2;
+			maxHealth = baseHealth * 2;
+			health = maxHealth;
 			maxMana = baseMana / 2;
 			mana = 0;
 			damage = baseDamage * 2;
 			cost = baseCost * 3;
-
 			break;
 		case 3:
-			health = baseHealth * 3;
+			maxHealth = baseHealth * 3;
+			health = maxHealth;
 			maxMana = baseMana / 3;
 			mana = 0;
 			damage = baseDamage * 3;
@@ -132,6 +165,7 @@ public:
 			if (mana + 10 > maxMana)
 			{
 				mana = maxMana;
+				//ability(boardToAttack, attackingBoard);
 			}
 			else
 			{
@@ -143,9 +177,6 @@ public:
 	{
 		std::cout << "casted ability debug";
 		mana = 0;
-		std::cin.ignore();
-		std::cin.clear();
-		std::cin.get();
 	}
 };
 
@@ -183,6 +214,7 @@ public:
 			if (mana + 10 > maxMana)
 			{
 				mana = maxMana;
+				//ability(boardToAttack, attackingBoard);
 			}
 			else
 			{
@@ -192,11 +224,10 @@ public:
 	}
 	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
-		std::cout << "casted ability debug";
 		mana = 0;
-		std::cin.ignore();
-		std::cin.clear();
-		std::cin.get();
+
+		boardToAttack[0]->recieveDamage(boardToAttack[0]->getHealth() * 0.1);
+		boardToAttack[boardToAttack.size() - 1]->recieveDamage(boardToAttack[0]->getHealth() * 0.1);
 	}
 };
 
@@ -234,6 +265,7 @@ public:
 			if (mana + 10 > maxMana)
 			{
 				mana = maxMana;
+				//ability(boardToAttack, attackingBoard);
 			}
 			else
 			{
@@ -243,10 +275,15 @@ public:
 	}
 	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
-		std::cout << "casted ability debug";
 		mana = 0;
-		std::cin.ignore();
-		std::cin.clear();
-		std::cin.get();
+		int tempHeal = 0;
+
+		for (int i = 0; i < boardToAttack.size(); i++)
+		{
+			boardToAttack[i]->recieveDamage(5);
+			tempHeal += 5;
+		}
+
+		recieveHeal(true, tempHeal);
 	}
 };

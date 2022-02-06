@@ -1,11 +1,9 @@
 #include <iostream>
 #include <vector>
-#include <stdlib.h>
 #include <iomanip>
 #include <string>
 #include "pawns.h"
 #include <thread>
-#include <conio.h>
 #include "color.h"
 
 using namespace std::this_thread;     // sleep_for, sleep_until
@@ -375,8 +373,16 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 
 	for (int i = 0; i < playerBoard.size(); i++)
 	{
-		std::string temp = "Mana: " + std::to_string(playerBoard[i]->getManaToCast());
-		std::cout << std::left << std::setw(15) << temp;
+		std::string temp = "Mana: " + std::to_string(playerBoard[i]->getMana()) + "/" + std::to_string(playerBoard[i]->getMaxMana());
+
+		if (playerBoard[i]->getMana() == playerBoard[i]->getMaxMana())
+		{
+			std::cout << std::left << std::setw(15) << dye::blue(temp);
+		}
+		else
+		{
+			std::cout << std::left << std::setw(15) << temp;
+		}
 	}
 
 	std::cout << "\n";
@@ -388,6 +394,10 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 		if (playerBoard[i]->wereDamagedRecently())
 		{
 			std::cout << std::left << std::setw(15) << dye::red(temp);
+		}
+		else if (playerBoard[i]->wereHealedRecently())
+		{
+			std::cout << std::left << std::setw(15) << dye::green(temp);
 		}
 		else
 		{
@@ -407,14 +417,14 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 
 	for (int i = 0; i < playerBoard.size(); i++)
 	{
-		std::cout << std::left << std::setw(15) << playerBoard[i]->getName();
+		std::cout << std::left << std::setw(15) << dye::black_on_white(playerBoard[i]->getName());
 	}
 
 	std::cout << "\n" << std::string(boardMax * 15, '-') << "\n";
 
 	for (int i = 0; i < enemyBoard.size(); i++)
 	{
-		std::cout << std::left << std::setw(15) << enemyBoard[i]->getName();
+		std::cout << std::left << std::setw(15) << dye::black_on_white(enemyBoard[i]->getName());
 	}
 
 	std::cout << "\n\n";
@@ -435,6 +445,10 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 		{
 			std::cout << std::left << std::setw(15) << dye::red(temp);
 		}
+		else if (enemyBoard[i]->wereHealedRecently())
+		{
+			std::cout << std::left << std::setw(15) << dye::green(temp);
+		}
 		else
 		{
 			std::cout << std::left << std::setw(15) << temp;
@@ -445,8 +459,16 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 
 	for (int i = 0; i < enemyBoard.size(); i++)
 	{
-		std::string temp = "Mana: " + std::to_string(enemyBoard[i]->getManaToCast());
-		std::cout << std::left << std::setw(15) << temp;
+		std::string temp = "Mana: " + std::to_string(enemyBoard[i]->getMana()) + "/" + std::to_string(enemyBoard[i]->getMaxMana());
+
+		if (enemyBoard[i]->getMana() == enemyBoard[i]->getMaxMana())
+		{
+			std::cout << std::left << std::setw(15) << dye::blue(temp);
+		}
+		else
+		{
+			std::cout << std::left << std::setw(15) << temp;
+		}
 	}
 
 	std::cout << "\n" << std::string(boardMax * 15, '-') << "\n";
@@ -493,13 +515,17 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 					printBoard(playerBoard, enemyBoard);
 					std::cout << "\n\n" << i << " " << playerBoard[i]->getName() << " attacked!" << "\n";
 
-					sleep_for(1s);
+					sleep_for(2s);
 				}
 
-				//reset recentlyDamaged flag
+				//reset 'recently' flags
 				for (int i = 0; i < enemyBoard.size(); i++)
 				{
-					enemyBoard[i]->recentlyDamagedReset();
+					enemyBoard[i]->recentlyReset();
+				}
+				for (int i = 0; i < playerBoard.size(); i++)
+				{
+					playerBoard[i]->recentlyReset();
 				}
 
 				if (i < enemyBoard.size())
@@ -509,13 +535,17 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 					printBoard(playerBoard, enemyBoard);
 					std::cout << "\n\n" << i << " " << enemyBoard[i]->getName() << " attacked!" << "\n";
 
-					sleep_for(1s);
+					sleep_for(2s);
 				}
 
-				//reset recentlyDamaged flag
+				//reset 'recently' flags
 				for (int i = 0; i < playerBoard.size(); i++)
 				{
-					playerBoard[i]->recentlyDamagedReset();
+					playerBoard[i]->recentlyReset();
+				}
+				for (int i = 0; i < enemyBoard.size(); i++)
+				{
+					enemyBoard[i]->recentlyReset();
 				}
 			}
 		}
