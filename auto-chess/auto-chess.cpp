@@ -150,7 +150,7 @@ void refreshShop(std::vector<pawn*>& shop)
 
 	for (int i = 0; i < shopMax; i++)
 	{
-		switch (rand() % 3)
+		switch (rand() % 4)
 		{
 		case 0:
 			shop.push_back(new pawn1);
@@ -160,6 +160,9 @@ void refreshShop(std::vector<pawn*>& shop)
 			break;
 		case 2:
 			shop.push_back(new pawn3);
+			break;
+		case 3:
+			shop.push_back(new pawn4);
 			break;
 		}
 	}
@@ -332,7 +335,7 @@ void battleMenu(std::vector<pawn*>& boardPtr)
 
 	for (int i = 0; i < boardMax; i++)
 	{
-		switch (rand() % 3)
+		switch (rand() % 4)
 		{
 		case 0:
 			EnemyBoardDebug.push_back(new pawn1);
@@ -342,6 +345,9 @@ void battleMenu(std::vector<pawn*>& boardPtr)
 			break;
 		case 2:
 			EnemyBoardDebug.push_back(new pawn3);
+			break;
+		case 3:
+			EnemyBoardDebug.push_back(new pawn4);
 			break;
 		}
 	}
@@ -373,7 +379,16 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 
 	for (int i = 0; i < playerBoard.size(); i++)
 	{
-		std::string temp = "Mana: " + std::to_string(playerBoard[i]->getMana()) + "/" + std::to_string(playerBoard[i]->getMaxMana());
+		std::string temp;
+
+		if (playerBoard[i]->getMaxMana() == 0)
+		{
+			temp = "Passive";
+		}
+		else
+		{
+			temp = "Mana: " + std::to_string(playerBoard[i]->getMana()) + "/" + std::to_string(playerBoard[i]->getMaxMana());
+		}
 
 		if (playerBoard[i]->getMana() == playerBoard[i]->getMaxMana())
 		{
@@ -459,7 +474,16 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 
 	for (int i = 0; i < enemyBoard.size(); i++)
 	{
-		std::string temp = "Mana: " + std::to_string(enemyBoard[i]->getMana()) + "/" + std::to_string(enemyBoard[i]->getMaxMana());
+		std::string temp;
+
+		if (enemyBoard[i]->getMaxMana() == 0)
+		{
+			temp = "Passive";
+		}
+		else
+		{
+			temp = "Mana: " + std::to_string(enemyBoard[i]->getMana()) + "/" + std::to_string(enemyBoard[i]->getMaxMana());
+		}
 
 		if (enemyBoard[i]->getMana() == enemyBoard[i]->getMaxMana())
 		{
@@ -518,7 +542,7 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 					sleep_for(2s);
 				}
 
-				//reset 'recently' flags
+				//reset 'recently' flags and erase dead pawns
 				for (int i = 0; i < enemyBoard.size(); i++)
 				{
 					enemyBoard[i]->recentlyReset();
@@ -527,6 +551,21 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 				{
 					playerBoard[i]->recentlyReset();
 				}
+				for (int i = 0; i < playerBoard.size(); i++)
+				{
+					if (playerBoard[i]->getIsDead() == true)
+					{
+						playerBoard.erase(playerBoard.begin() + i);
+					}
+				}
+				for (int i = 0; i < enemyBoard.size(); i++)
+				{
+					if (enemyBoard[i]->getIsDead() == true)
+					{
+						enemyBoard.erase(enemyBoard.begin() + i);
+					}
+				}
+				////////////////////////////////////////////////
 
 				if (i < enemyBoard.size())
 				{
@@ -538,7 +577,7 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 					sleep_for(2s);
 				}
 
-				//reset 'recently' flags
+				//reset 'recently' flags and erase dead pawns
 				for (int i = 0; i < playerBoard.size(); i++)
 				{
 					playerBoard[i]->recentlyReset();
@@ -547,6 +586,21 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 				{
 					enemyBoard[i]->recentlyReset();
 				}
+				for (int i = 0; i < playerBoard.size(); i++)
+				{
+					if (playerBoard[i]->getIsDead() == true)
+					{
+						playerBoard.erase(playerBoard.begin() + i);
+					}
+				}
+				for (int i = 0; i < enemyBoard.size(); i++)
+				{
+					if (enemyBoard[i]->getIsDead() == true)
+					{
+						enemyBoard.erase(enemyBoard.begin() + i);
+					}
+				}
+				////////////////////////////////////////////////
 			}
 		}
 	}
