@@ -26,9 +26,12 @@ protected:
 
 	bool isDead = false;
 
+	//std::string attackActionText = "DEFAULT ATTACK TEXT";
+	//std::string abilityActionText = "DEFAULT ABILITY TEXT";
+
 public:
-	virtual void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
-	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
+	virtual std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
+	virtual std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
 
 	void getInfo()
 	{
@@ -165,11 +168,11 @@ public:
 		baseCost = 1;
 		updateStats();
 	}
-	void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		if (mana == maxMana)
 		{
-			ability(boardToAttack, attackingBoard);
+			return ability(boardToAttack, attackingBoard);
 		}
 		else
 		{
@@ -189,9 +192,10 @@ public:
 			{
 				mana += 10;
 			}
+			return name + " attacks and deals " + std::to_string(damage) + " damage to " + boardToAttack[attackIndex]->getName() + "!";
 		}
 	}
-	void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		mana = 0;
 
@@ -206,6 +210,8 @@ public:
 		}
 
 		boardToAttack[lowestHpIndex]->recieveDamage(9999);
+
+		return name + " uses 'EXECUTE' and kills " + boardToAttack[lowestHpIndex]->getName() + "!";
 	}
 };
 
@@ -221,11 +227,11 @@ public:
 		baseCost = 2;
 		updateStats();
 	}
-	void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		if (mana == maxMana)
 		{
-			ability(boardToAttack, attackingBoard);
+			return ability(boardToAttack, attackingBoard);
 		}
 		else
 		{
@@ -245,14 +251,16 @@ public:
 			{
 				mana += 10;
 			}
+			return name + " attacks and deals " + std::to_string(damage) + " damage to " + boardToAttack[attackIndex]->getName() + "!";
 		}
 	}
-	void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		mana = 0;
 
 		boardToAttack[0]->recieveDamage(boardToAttack[0]->getHealth() * 0.1);
 		boardToAttack[boardToAttack.size() - 1]->recieveDamage(boardToAttack[0]->getHealth() * 0.1);
+		return name + " uses 'WINGMAN' and deals damage equal to 10% of current health of " + boardToAttack[0]->getName() + " and " + boardToAttack[boardToAttack.size() - 1]->getName() + "!";
 	}
 };
 
@@ -268,11 +276,11 @@ public:
 		baseCost = 3;
 		updateStats();
 	}
-	void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		if (mana == maxMana)
 		{
-			ability(boardToAttack, attackingBoard);
+			return ability(boardToAttack, attackingBoard);
 		}
 		else
 		{
@@ -292,9 +300,10 @@ public:
 			{
 				mana += 10;
 			}
+			return name + " attacks and deals " + std::to_string(damage) + " damage to " + boardToAttack[attackIndex]->getName() + "!";
 		}
 	}
-	void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		mana = 0;
 		int tempHeal = 0;
@@ -306,6 +315,7 @@ public:
 		}
 
 		recieveHeal(true, tempHeal);
+		return name + " uses 'SUCKER' and deals " + std::to_string(5) + " damage, healing himself for " + std::to_string(tempHeal) + "!";
 	}
 };
 
@@ -321,7 +331,7 @@ public:
 		baseCost = 2;
 		updateStats();
 	}
-	void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		bool woundedAllies = false;
 
@@ -335,7 +345,7 @@ public:
 		}
 		if (woundedAllies == true)
 		{
-			ability(boardToAttack, attackingBoard);
+			return ability(boardToAttack, attackingBoard);
 		}
 		else
 		{
@@ -345,14 +355,16 @@ public:
 			attackIndex = rand() % attackMaxIndex;
 
 			boardToAttack[attackIndex]->recieveDamage(damage);
+			return name + " attacks and deals " + std::to_string(damage) + " damage to " + boardToAttack[attackIndex]->getName() + "!";
 		}
 	}
-	void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		for (int i = 0; i < attackingBoard.size(); i++)
 		{
 			attackingBoard[i]->recieveHeal(false, damage);
 		}
+		return name + " uses 'VITALITY' and heals injured allies for " + std::to_string(damage) + " health!";
 	}
 };
 

@@ -499,9 +499,29 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 	std::cout << "Enemy pawns\n";
 }
 
+void printBattleLog(std::vector<std::string>battleLog)
+{
+	std::cout << "\nBattle log";
+	std::cout << "\n----------";
+	std::cout << "\nlatest\n\n";
+
+	for (int i = battleLog.size() - 1; i >= 0; i--)
+	{
+		if ((battleLog.size() - 1) - i == 3)
+		{
+			std::cout << "...\n";
+			break;
+		}
+		std::cout << battleLog[i] << std::endl;
+	}
+	std::cout << "\n----------";
+}
+
 void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 {
 	int counter;
+	std::string pawnActionText;
+	std::vector<std::string>battleLog;
 
 	while (true)
 	{
@@ -534,10 +554,11 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 			{
 				if (i < playerBoard.size())
 				{
-					playerBoard[i]->attack(enemyBoard, playerBoard);
+					battleLog.push_back(pawnActionText = playerBoard[i]->attack(enemyBoard, playerBoard));
 
 					printBoard(playerBoard, enemyBoard);
-					std::cout << "\n\n" << i << " " << playerBoard[i]->getName() << " attacked!" << "\n";
+					std::cout << "\n\n" << i << " " << pawnActionText << "\n";
+					printBattleLog(battleLog);
 
 					sleep_for(2s);
 				}
@@ -569,10 +590,11 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 
 				if (i < enemyBoard.size())
 				{
-					enemyBoard[i]->attack(playerBoard, enemyBoard);
+					battleLog.push_back(pawnActionText = enemyBoard[i]->attack(playerBoard, enemyBoard));
 
 					printBoard(playerBoard, enemyBoard);
-					std::cout << "\n\n" << i << " " << enemyBoard[i]->getName() << " attacked!" << "\n";
+					std::cout << "\n\n" << i << " " << pawnActionText << "\n";
+					printBattleLog(battleLog);
 
 					sleep_for(2s);
 				}
