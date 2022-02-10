@@ -191,7 +191,7 @@ public:
 			}
 		}
 	}
-	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		mana = 0;
 
@@ -247,7 +247,7 @@ public:
 			}
 		}
 	}
-	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		mana = 0;
 
@@ -294,7 +294,7 @@ public:
 			}
 		}
 	}
-	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		mana = 0;
 		int tempHeal = 0;
@@ -335,10 +335,7 @@ public:
 		}
 		if (woundedAllies == true)
 		{
-			for (int i = 0; i < attackingBoard.size(); i++)
-			{
-				ability(boardToAttack, attackingBoard);
-			}
+			ability(boardToAttack, attackingBoard);
 		}
 		else
 		{
@@ -350,7 +347,7 @@ public:
 			boardToAttack[attackIndex]->recieveDamage(damage);
 		}
 	}
-	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		for (int i = 0; i < attackingBoard.size(); i++)
 		{
