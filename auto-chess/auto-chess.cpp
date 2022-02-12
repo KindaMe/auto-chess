@@ -22,6 +22,7 @@ void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergePawns(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<int> sameIndex);
 void battleMenu(std::vector<pawn*>& boardPtr);
+void resetFlagsAndDead(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard);
 void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard);
 void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard);
 
@@ -501,7 +502,8 @@ void printBoard(std::vector<pawn*>& playerBoard, std::vector<pawn*>& enemyBoard)
 
 void printBattleLog(std::vector<std::string>battleLog)
 {
-	std::cout << "\nBattle log";
+	std::cout << "\n----------";
+	std::cout << dye::black_on_white("\nBattle log");
 	std::cout << "\n----------";
 	std::cout << "\nlatest\n\n";
 
@@ -509,10 +511,10 @@ void printBattleLog(std::vector<std::string>battleLog)
 	{
 		if ((battleLog.size() - 1) - i == 3)
 		{
-			std::cout << "...\n";
+			std::cout << "...";
 			break;
 		}
-		std::cout << battleLog[i] << std::endl;
+		std::cout << dye::black_on_white(battleLog[i]) << "\n\n";
 	}
 	std::cout << "\n----------";
 }
@@ -554,76 +556,56 @@ void battle(std::vector<pawn*> playerBoard, std::vector<pawn*> enemyBoard)
 			{
 				if (i < playerBoard.size())
 				{
-					battleLog.push_back(pawnActionText = playerBoard[i]->attack(enemyBoard, playerBoard));
+					battleLog.push_back(pawnActionText = playerBoard[i]->engage(enemyBoard, playerBoard));
 
 					printBoard(playerBoard, enemyBoard);
-					std::cout << "\n\n" << i << " " << pawnActionText << "\n";
+					std::cout << "\n\n" << pawnActionText << "\n\n";
 					printBattleLog(battleLog);
 
 					sleep_for(2s);
 				}
 
-				//reset 'recently' flags and erase dead pawns
-				for (int i = 0; i < enemyBoard.size(); i++)
-				{
-					enemyBoard[i]->recentlyReset();
-				}
-				for (int i = 0; i < playerBoard.size(); i++)
-				{
-					playerBoard[i]->recentlyReset();
-				}
-				for (int i = 0; i < playerBoard.size(); i++)
-				{
-					if (playerBoard[i]->getIsDead() == true)
-					{
-						playerBoard.erase(playerBoard.begin() + i);
-					}
-				}
-				for (int i = 0; i < enemyBoard.size(); i++)
-				{
-					if (enemyBoard[i]->getIsDead() == true)
-					{
-						enemyBoard.erase(enemyBoard.begin() + i);
-					}
-				}
-				////////////////////////////////////////////////
+				resetFlagsAndDead(playerBoard, enemyBoard);//reset 'recently' flags and erase dead pawns
 
 				if (i < enemyBoard.size())
 				{
-					battleLog.push_back(pawnActionText = enemyBoard[i]->attack(playerBoard, enemyBoard));
+					battleLog.push_back(pawnActionText = enemyBoard[i]->engage(playerBoard, enemyBoard));
 
 					printBoard(playerBoard, enemyBoard);
-					std::cout << "\n\n" << i << " " << pawnActionText << "\n";
+					std::cout << "\n\n" << pawnActionText << "\n\n";
 					printBattleLog(battleLog);
 
 					sleep_for(2s);
 				}
 
-				//reset 'recently' flags and erase dead pawns
-				for (int i = 0; i < playerBoard.size(); i++)
-				{
-					playerBoard[i]->recentlyReset();
-				}
-				for (int i = 0; i < enemyBoard.size(); i++)
-				{
-					enemyBoard[i]->recentlyReset();
-				}
-				for (int i = 0; i < playerBoard.size(); i++)
-				{
-					if (playerBoard[i]->getIsDead() == true)
-					{
-						playerBoard.erase(playerBoard.begin() + i);
-					}
-				}
-				for (int i = 0; i < enemyBoard.size(); i++)
-				{
-					if (enemyBoard[i]->getIsDead() == true)
-					{
-						enemyBoard.erase(enemyBoard.begin() + i);
-					}
-				}
-				////////////////////////////////////////////////
+				resetFlagsAndDead(enemyBoard, playerBoard);//reset 'recently' flags and erase dead pawns
 			}
+		}
+	}
+}
+
+void resetFlagsAndDead(std::vector<pawn*>& board1, std::vector<pawn*>& board2)
+{
+	for (int i = 0; i < board2.size(); i++)
+	{
+		board2[i]->recentlyReset();
+	}
+	for (int i = 0; i < board1.size(); i++)
+	{
+		board1[i]->recentlyReset();
+	}
+	for (int i = 0; i < board1.size(); i++)
+	{
+		if (board1[i]->getIsDead() == true)
+		{
+			board1.erase(board1.begin() + i);
+		}
+	}
+	for (int i = 0; i < board2.size(); i++)
+	{
+		if (board2[i]->getIsDead() == true)
+		{
+			board2.erase(board2.begin() + i);
 		}
 	}
 }

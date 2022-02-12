@@ -12,6 +12,7 @@ protected:
 	int baseMana = 0;
 	int baseDamage = 0;
 	int baseCost = 0;
+	bool noAbility = false;
 
 	int maxHealth = 0;
 	int health = 0;
@@ -26,12 +27,41 @@ protected:
 
 	bool isDead = false;
 
-	//std::string attackActionText = "DEFAULT ATTACK TEXT";
-	//std::string abilityActionText = "DEFAULT ABILITY TEXT";
-
 public:
-	virtual std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
+
+	std::string engage(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	{
+		if (mana == maxMana && noAbility == false)
+		{
+			return ability(boardToAttack, attackingBoard) + "\n" + passive(boardToAttack, attackingBoard);
+		}
+		else
+		{
+			return attack(boardToAttack, attackingBoard) + "\n" + passive(boardToAttack, attackingBoard);
+		}
+	}
+
+	virtual std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	{
+		int attackMaxIndex = boardToAttack.size();
+		int attackIndex;
+
+		attackIndex = rand() % attackMaxIndex;
+
+		boardToAttack[attackIndex]->recieveDamage(damage);
+
+		if (mana + 10 > maxMana)
+		{
+			mana = maxMana;
+		}
+		else
+		{
+			mana += 10;
+		}
+		return name + " attacks and deals " + std::to_string(damage) + " damage to " + boardToAttack[attackIndex]->getName() + "!";
+	}
 	virtual std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
+	virtual std::string passive(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) = 0;
 
 	void getInfo()
 	{
@@ -166,34 +196,8 @@ public:
 		baseMana = 50;
 		baseDamage = 5;
 		baseCost = 1;
+		noAbility = false;
 		updateStats();
-	}
-	std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
-	{
-		if (mana == maxMana)
-		{
-			return ability(boardToAttack, attackingBoard);
-		}
-		else
-		{
-			int attackMaxIndex = boardToAttack.size();
-			int attackIndex;
-
-			attackIndex = rand() % attackMaxIndex;
-
-			boardToAttack[attackIndex]->recieveDamage(damage);
-
-			if (mana + 10 > maxMana)
-			{
-				mana = maxMana;
-				//ability(boardToAttack, attackingBoard);
-			}
-			else
-			{
-				mana += 10;
-			}
-			return name + " attacks and deals " + std::to_string(damage) + " damage to " + boardToAttack[attackIndex]->getName() + "!";
-		}
 	}
 	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
@@ -213,6 +217,10 @@ public:
 
 		return name + " uses 'EXECUTE' and kills " + boardToAttack[lowestHpIndex]->getName() + "!";
 	}
+	std::string passive(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	{
+		return "passive ph";
+	}
 };
 
 class pawn2 : public pawn
@@ -225,34 +233,8 @@ public:
 		baseMana = 40;
 		baseDamage = 10;
 		baseCost = 2;
+		noAbility = false;
 		updateStats();
-	}
-	std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
-	{
-		if (mana == maxMana)
-		{
-			return ability(boardToAttack, attackingBoard);
-		}
-		else
-		{
-			int attackMaxIndex = boardToAttack.size();
-			int attackIndex;
-
-			attackIndex = rand() % attackMaxIndex;
-
-			boardToAttack[attackIndex]->recieveDamage(damage);
-
-			if (mana + 10 > maxMana)
-			{
-				mana = maxMana;
-				//ability(boardToAttack, attackingBoard);
-			}
-			else
-			{
-				mana += 10;
-			}
-			return name + " attacks and deals " + std::to_string(damage) + " damage to " + boardToAttack[attackIndex]->getName() + "!";
-		}
 	}
 	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
@@ -261,6 +243,10 @@ public:
 		boardToAttack[0]->recieveDamage(boardToAttack[0]->getHealth() * 0.1);
 		boardToAttack[boardToAttack.size() - 1]->recieveDamage(boardToAttack[0]->getHealth() * 0.1);
 		return name + " uses 'WINGMAN' and deals damage equal to 10% of current health of " + boardToAttack[0]->getName() + " and " + boardToAttack[boardToAttack.size() - 1]->getName() + "!";
+	}
+	std::string passive(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	{
+		return "passive ph";
 	}
 };
 
@@ -274,34 +260,8 @@ public:
 		baseMana = 60;
 		baseDamage = 25;
 		baseCost = 3;
+		noAbility = false;
 		updateStats();
-	}
-	std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
-	{
-		if (mana == maxMana)
-		{
-			return ability(boardToAttack, attackingBoard);
-		}
-		else
-		{
-			int attackMaxIndex = boardToAttack.size();
-			int attackIndex;
-
-			attackIndex = rand() % attackMaxIndex;
-
-			boardToAttack[attackIndex]->recieveDamage(damage);
-
-			if (mana + 10 > maxMana)
-			{
-				mana = maxMana;
-				//ability(boardToAttack, attackingBoard);
-			}
-			else
-			{
-				mana += 10;
-			}
-			return name + " attacks and deals " + std::to_string(damage) + " damage to " + boardToAttack[attackIndex]->getName() + "!";
-		}
 	}
 	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
@@ -317,6 +277,10 @@ public:
 		recieveHeal(true, tempHeal);
 		return name + " uses 'SUCKER' and deals " + std::to_string(5) + " damage, healing himself for " + std::to_string(tempHeal) + "!";
 	}
+	std::string passive(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	{
+		return "passive ph";
+	}
 };
 
 class pawn4 : public pawn
@@ -329,9 +293,14 @@ public:
 		baseMana = 0;
 		baseDamage = 10;
 		baseCost = 2;
+		noAbility = true;
 		updateStats();
 	}
-	std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+	{
+		return "noAbility";
+	}
+	std::string passive(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 	{
 		bool woundedAllies = false;
 
@@ -345,26 +314,13 @@ public:
 		}
 		if (woundedAllies == true)
 		{
-			return ability(boardToAttack, attackingBoard);
+			for (int i = 0; i < attackingBoard.size(); i++)
+			{
+				attackingBoard[i]->recieveHeal(false, damage);
+			}
+			return name + "'s passive heals injured allies for " + std::to_string(damage) + " health!";
 		}
-		else
-		{
-			int attackMaxIndex = boardToAttack.size();
-			int attackIndex;
-
-			attackIndex = rand() % attackMaxIndex;
-
-			boardToAttack[attackIndex]->recieveDamage(damage);
-			return name + " attacks and deals " + std::to_string(damage) + " damage to " + boardToAttack[attackIndex]->getName() + "!";
-		}
-	}
-	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
-	{
-		for (int i = 0; i < attackingBoard.size(); i++)
-		{
-			attackingBoard[i]->recieveHeal(false, damage);
-		}
-		return name + " uses 'VITALITY' and heals injured allies for " + std::to_string(damage) + " health!";
+		return name + "'s passive could not heal anyone!";
 	}
 };
 
@@ -375,39 +331,23 @@ public:
 //	xxxxxx()
 //	{
 //		name = "xxxxxx";
-//		baseHealth = xxxxxx;
-//		baseMana = xxxxxx;
-//		baseDamage = xxxxxx;
-//		baseCost = xxxxxx;
+//		baseHealth = 0;
+//		baseMana = 0;
+//		baseDamage = 0;
+//		baseCost = 0;
+//		noAbility = false;
 //		updateStats();
 //	}
-//	void attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+//	std::string attack(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard) override
 //	{
-//		if (mana == maxMana)
-//		{
-//			ability(boardToAttack, attackingBoard);
-//		}
-//		else
-//		{
-//			int attackMaxIndex = boardToAttack.size();
-//			int attackIndex;
-//
-//			attackIndex = rand() % attackMaxIndex;
-//
-//			boardToAttack[attackIndex]->recieveDamage(damage);
-//
-//			if (mana + 10 > maxMana)
-//			{
-//				mana = maxMana;
-//			}
-//			else
-//			{
-//				mana += 10;
-//			}
-//		}
+//		return pawn::attack(boardToAttack, attackingBoard);
 //	}
-//	virtual void ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+//	std::string ability(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
 //	{
-//		mana = 0;
+//		return "noAbility";
+//	}
+//	std::string passive(std::vector<pawn*>& boardToAttack, std::vector<pawn*>& attackingBoard)
+//	{
+//		return name + "'s passive!";
 //	}
 //};
