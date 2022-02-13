@@ -16,7 +16,7 @@ const int shopMax = 5;
 const int refreshCost = 2;
 
 void inGame();
-void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& shop);
+void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<pawn*>& shop);
 void refreshShop(std::vector<pawn*>& shop);
 void manageBoard(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
 void mergeCheck(std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr);
@@ -59,15 +59,12 @@ void inGame()
 		{
 		case '2':
 			manageBoard(bench, board);
-			mergeCheck(bench, board);
 			break;
 		case '1':
-			shopping(gold, bench, shop);
-			mergeCheck(bench, board);
+			shopping(gold, bench, board, shop);
 			break;
 		case 'r':
 			std::cout << "Ready!";
-
 			battleMenu(board);
 			break;
 		default:
@@ -76,7 +73,7 @@ void inGame()
 	} while (true);
 }
 
-void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& shop)
+void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& boardPtr, std::vector<pawn*>& shop)
 {
 	char mode = 'b';
 	char choice;
@@ -117,6 +114,8 @@ void shopping(int& goldPtr, std::vector<pawn*>& benchPtr, std::vector<pawn*>& sh
 					goldPtr -= shop[choice - '0' - 1]->getCost();
 					benchPtr.push_back(shop[choice - '0' - 1]);
 					shop.erase((shop.begin() + (choice - '0' - 1)));
+
+					mergeCheck(benchPtr, boardPtr);
 				}
 			}
 			else if (mode == 's' && (choice - '0' - 1) < benchPtr.size())
@@ -334,7 +333,7 @@ void battleMenu(std::vector<pawn*>& boardPtr)
 	std::vector<pawn*> EnemyBoardDebug;
 	std::vector<pawn*> EnemyBenchEmptyDebug;
 
-	for (int i = 0; i < boardMax; i++)
+	while (EnemyBoardDebug.size() < boardMax)
 	{
 		switch (rand() % 4)
 		{
@@ -351,8 +350,8 @@ void battleMenu(std::vector<pawn*>& boardPtr)
 			EnemyBoardDebug.push_back(new pawn4);
 			break;
 		}
+		mergeCheck(EnemyBenchEmptyDebug, EnemyBoardDebug);
 	}
-	mergeCheck(EnemyBenchEmptyDebug, EnemyBoardDebug);
 	/////
 
 	printBoard(boardPtr, EnemyBoardDebug);
